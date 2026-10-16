@@ -1,13 +1,45 @@
 name: scanintent
 services:
+  app:
+    build: .
+    init: true
+    restart: unless-stopped
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${SCANINTENT_HTTP_PORT:-8765}:8765"
+    environment:
+      SCANINTENT_CLICKHOUSE_URL: http://clickhouse:8123
+      SCANINTENT_PROJECT_ID: ${SCANINTENT_PROJECT_ID:-}
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /app/.env
+        read_only: true
+        bind:
+          create_host_path: false
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        : "$${SCANINTENT_PROJECT_ID:?Set SCANINTENT_PROJECT_ID in .env}" &&
+        python scanintent.py init-db &&
+        exec python scanintent.py serve --host 0.0.0.0 --project-id "$$SCANINTENT_PROJECT_ID"
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8765/api/conversations?page=1&size=1', timeout=5).read()"]
+      interval: 10s
+      timeout: 6s
+      start_period: 10s
+      retries: 5
   clickhouse:
     image: clickhouse/clickhouse-server@sha256:810861a2e2d0188744f5f23b2d3ec9ff95812bcb9ddbb8fed13a377a7f305893
+    restart: unless-stopped
     ports:
       - "127.0.0.1:18124:8123"
     environment:
-      CLICKHOUSE_DB: scanintent
-      CLICKHOUSE_USER: scanintent
-      CLICKHOUSE_PASSWORD: ${SCANINTENT_CLICKHOUSE_PASSWORD:?Run python3 scanintent.py init-local first}
+      CLICKHOUSE_DB: ${SCANINTENT_CLICKHOUSE_DATABASE:-scanintent}
+      CLICKHOUSE_USER: ${SCANINTENT_CLICKHOUSE_USER:-scanintent}
+      CLICKHOUSE_PASSWORD: ${SCANINTENT_CLICKHOUSE_PASSWORD:?Set SCANINTENT_CLICKHOUSE_PASSWORD in .env}
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
     volumes:
       - scanintent-clickhouse-data:/var/lib/clickhouse

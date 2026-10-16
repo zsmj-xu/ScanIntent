@@ -29,6 +29,15 @@ def observation(oid, messages, output=None, **kwargs):
 
 
 class ViewerTests(unittest.TestCase):
+    @patch("web.ThreadingHTTPServer")
+    def test_listen_address_defaults_to_loopback_and_allows_container_binding(self, server):
+        from web import serve
+        for host in (None, "0.0.0.0"):
+            with self.subTest(host=host), patch("builtins.print"):
+                serve(None, "test-project", 8765, **({} if host is None else {"host": host}))
+                self.assertEqual(server.call_args.args[0], (host or "127.0.0.1", 8765))
+                server.return_value.server_close.assert_called()
+
     def test_message_pages_preserve_order_sources_and_hide_internal_records(self):
         messages = [dict(message_id=str(i), kind="text", role="user", content=str(i), observation_id=str(i),
                          field="input", path=f"/messages/{i}/content", source_span=[0, 2]) for i in range(45)]

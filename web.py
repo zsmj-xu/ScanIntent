@@ -18,7 +18,7 @@ def conversation_page(row, page, internal=False):
     return result
 
 
-def serve(store, project, port):
+def serve(store, project, port, *, host="127.0.0.1"):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
             pass  # URLs and content are deliberately excluded from access logs.
@@ -70,8 +70,8 @@ def serve(store, project, port):
             except (ValueError, RuntimeError, OSError):
                 self.send(503, {"error": "读取失败，请检查本地数据库后重试"})
 
-    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print("ScanIntent: http://127.0.0.1:" + str(port) + " (read-only viewer; does not start collection)", flush=True)
+    server = ThreadingHTTPServer((host, port), Handler)
+    print("ScanIntent: http://" + host + ":" + str(port) + " (read-only viewer; does not start collection)", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

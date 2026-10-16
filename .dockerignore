@@ -1,0 +1,13 @@
+**
+!Dockerfile
+!ck_reader.py
+!clickhouse.py
+!collector.py
+!reconstruction.py
+!scanintent.py
+!schema.sql
+!source.py
+!store.py
+!web.py
+!static/
+!static/**
