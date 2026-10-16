@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f6f8f7"><title>ScanIntent · 会话记录</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<header class="app-header"><a class="brand" href="#" aria-label="ScanIntent 会话首页"><span class="mark" aria-hidden="true">S<span></span></span><strong>ScanIntent</strong><span class="subtitle">会话工作台</span></a><nav class="app-nav" aria-label="主导航"><a id="nav-sessions" href="#">会话记录</a><a id="nav-runs" href="#view=runs">采集记录</a></nav><button id="refresh" class="quiet">刷新记录</button></header>
+<main id="main" tabindex="-1">
+<section id="list-view" class="workspace" aria-labelledby="list-title">
+<div class="page-heading"><div><p class="eyebrow">CONVERSATION ARCHIVE</p><h1 id="list-title">会话记录 <span id="total" class="count">—</span></h1><p class="muted">找到一段对话，从这里继续了解。</p></div><span class="local-note"><span class="dot"></span> 本地记录 · 手动刷新</span></div>
+<form id="filters" class="filter-panel" role="search" aria-label="筛选会话">
+<div class="filter-main"><label class="search-field"><span class="sr-only">搜索会话</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="query" type="search" placeholder="搜索标题或 Trace ID…" autocomplete="off"><kbd>/</kbd></label><label class="field alias-field"><span>身份</span><select id="alias"><option value="">全部身份</option></select></label><button type="button" id="advanced-toggle" aria-expanded="false" aria-controls="advanced">更多筛选 <span id="filter-count"></span></button></div>
+<div id="advanced" class="advanced" hidden><label class="field"><span>最后活跃 · 起始日期</span><input type="date" id="start"></label><label class="field"><span>结束日期（含当天）</span><input type="date" id="end"></label><label class="check-field"><input type="checkbox" id="warning"> 仅看有还原提示的会话</label><button type="submit">应用筛选</button></div>
+<div id="active-filters" class="active-filters" hidden></div><p id="filter-error" class="error-text" role="alert" hidden></p>
+</form>
+<div class="results-toolbar"><p id="list-status" role="status">正在读取会话…</p><div class="results-actions"><div id="quick-pagination" class="quick-pagination" aria-label="快捷分页"></div><label class="sort-field">排序 <select id="order"><option value="newest">最近活跃优先</option><option value="oldest">最早活跃优先</option></select></label></div></div>
+<div id="results" class="results" aria-busy="true"><div class="table-head" aria-hidden="true"><span>会话 / 身份</span><span>最后活跃</span><span>消息</span><span>还原提示</span><span></span></div><div id="sessions"></div></div>
+<div id="pagination" class="pagination" hidden><label class="size-field">每页 <select id="size"><option value="20">20 条</option><option value="50">50 条</option><option value="100">100 条</option></select></label><div id="page-buttons" class="page-buttons" aria-label="会话分页"></div><form id="jump-form" class="jump-form"><label>前往 <input id="jump" type="number" min="1" value="1" aria-label="页码"></label><button type="submit" aria-label="跳转到指定页">跳转</button></form></div>
+</section>
+<section id="runs-view" class="workspace" aria-labelledby="runs-title" hidden><div class="page-heading"><div><p class="eyebrow">COLLECTION HISTORY</p><h1 id="runs-title">采集记录</h1><p class="muted">查看最近 20 次采集的结果、范围与阶段耗时。</p></div><a id="runs-return" class="button" href="#">返回会话</a></div><div id="runs" aria-live="polite"></div></section>
+<section id="reader-view" class="reader-view" aria-label="会话阅读页" hidden></section>
+</main>
+<dialog id="preview" class="preview" aria-labelledby="title"><div id="preview-host"></div></dialog>
+<article id="conversation" hidden>
+<div class="reader-actions"><button id="close-detail" class="quiet">关闭预览 <kbd>Esc</kbd></button><div class="actions"><button id="copy-link" class="quiet">复制链接</button><button id="expand-detail">完整阅读 ↗</button></div></div>
+<div id="detail-scroll" class="detail-scroll"><div id="detail-status" role="status"></div><div id="detail-content" hidden><div class="detail-head"><p id="identity" class="eyebrow"></p><h2 id="title" tabindex="-1"></h2><p id="meta" class="muted"></p><details id="warnings-box" class="warning-box"><summary id="warnings-summary"></summary><ul id="warnings"></ul></details><details class="trace-info"><summary>会话标识与来源概况</summary><code id="trace-id"></code><p id="trace-meta" class="muted"></p></details></div>
+<div class="message-toolbar"><div class="segmented" role="group" aria-label="消息视图"><button id="dialogue-tab" aria-pressed="true">对话</button><button id="internal-tab" aria-pressed="false">全部记录</button></div><span id="message-count" class="muted"></span><div id="message-nav" class="quick-pagination" aria-label="快捷消息分页"></div><button id="to-bottom" class="quiet">到本页底部 ↓</button></div><div id="messages"></div><div id="message-pagination" class="message-pagination" aria-label="消息分页"></div></div></div>
+</article>
+<div id="toast" class="toast" role="status" hidden></div>
+</body></html>
