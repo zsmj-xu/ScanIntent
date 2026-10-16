@@ -6,4 +6,3 @@ observations*.md
 .collection.lock
 .DS_Store
 .verification/
-/test.py

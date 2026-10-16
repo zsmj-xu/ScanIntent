@@ -296,7 +296,7 @@ class ReconstructionTests(unittest.TestCase):
             reconstruct("p", "other", [observation("one", [])])
 
     def test_local_verified_samples_retain_all_clean_messages(self):
-        paths = list(Path(__file__).parent.glob("*.conversation.json"))
+        paths = list((Path(__file__).parent / ".verification" / "samples").glob("*.conversation.json"))
         if not paths:
             self.skipTest("Private local sample files are not distributed")
         for path in paths:
