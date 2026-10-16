@@ -17,8 +17,11 @@ cp .env.example .env
 chmod 600 .env
 ```
 
-编辑 `.env`，填写 `SCANINTENT_PROJECT_ID`、随机生成的目标库密码，以及来源库的
-`SOURCE_CLICKHOUSE_*` 配置。可用 `openssl rand -hex 24` 生成目标库密码。
+完整配置和每项说明见 [`.env.example`](.env.example)。必须替换 5 项：
+`SCANINTENT_PROJECT_ID`、`SCANINTENT_CLICKHOUSE_PASSWORD`、`SOURCE_CLICKHOUSE_HOST`、
+`SOURCE_CLICKHOUSE_USER` 和 `SOURCE_CLICKHOUSE_PASSWORD`。
+其余项可保留默认值，但来源库的端口、数据库名和 HTTPS 开关须与实际环境一致。
+可用 `openssl rand -hex 24` 生成目标库密码。
 已有 `.env` 时直接补充 `SCANINTENT_PROJECT_ID`，保留原目标库密码，不要用示例覆盖。
 来源库使用容器可访问的地址；`127.0.0.1` 在容器中表示容器自身。
 
@@ -28,7 +31,8 @@ docker compose up -d --build --wait
 
 启动 ClickHouse 和网页服务，数据库健康后自动初始化表结构。
 打开 http://127.0.0.1:8765；已有项目数据仍使用原来的独立 Docker volume。
-端口被占用时在 `.env` 设置 `SCANINTENT_HTTP_PORT=18765`，重新启动后访问该端口。
+端口被占用时在 `.env` 设置 `SCANINTENT_HTTP_PORT=18765`，重新执行
+`docker compose up -d` 后访问该端口；单纯 `restart` 不会更新端口映射或容器环境变量。
 网页和数据库端口默认仅绑定宿主机 `127.0.0.1`。
 
 检查来源连接、手动采集一轮：
