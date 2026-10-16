@@ -1,0 +1,8 @@
+.env*
+__pycache__/
+observations*.json
+observations*.md
+.collection.lock
+.DS_Store
+.verification/
+/test.py
