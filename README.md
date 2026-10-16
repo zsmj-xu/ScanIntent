@@ -7,11 +7,58 @@
 
 ## 启动
 
-Python 3.9+，仅标准库；本机需要 Docker Compose。
+### Docker Compose 部署（推荐）
+
+只需要 Docker 和 Docker Compose，不需要在宿主机安装 Python。
+在项目目录执行；新环境先创建配置：
+
+```sh
+cp .env.example .env
+chmod 600 .env
+```
+
+编辑 `.env`，填写 `SCANINTENT_PROJECT_ID`、随机生成的目标库密码，以及来源库的
+`SOURCE_CLICKHOUSE_*` 配置。可用 `openssl rand -hex 24` 生成目标库密码。
+已有 `.env` 时直接补充 `SCANINTENT_PROJECT_ID`，保留原目标库密码，不要用示例覆盖。
+来源库使用容器可访问的地址；`127.0.0.1` 在容器中表示容器自身。
+
+```sh
+docker compose up -d --build --wait
+```
+
+启动 ClickHouse 和网页服务，数据库健康后自动初始化表结构。
+打开 http://127.0.0.1:8765；已有项目数据仍使用原来的独立 Docker volume。
+端口被占用时在 `.env` 设置 `SCANINTENT_HTTP_PORT=18765`，重新启动后访问该端口。
+网页和数据库端口默认仅绑定宿主机 `127.0.0.1`。
+
+检查来源连接、手动采集一轮：
+
+```sh
+docker compose exec app python scanintent.py doctor-source
+docker compose exec app python scanintent.py collect --project-id '项目ID' \
+  --start '2026-09-14T14:30:00+08:00' --max-traces 100
+```
+
+采集完成后刷新网页；部署不会自动采集或启动定时任务。
+容器采集统一通过 `docker compose exec app` 执行，使写入进程共用同一把文件锁；
+不要同时运行宿主机采集命令或另起容器写入同一目标库。
+
+```sh
+docker compose ps
+docker compose logs --tail 100 app
+docker compose down
+```
+
+`down` 保留数据库数据。更新代码后重新执行 `docker compose up -d --build --wait`。
+`.env` 只读挂载到应用容器，不进入镜像；真实对话和验证产物也不进入构建上下文。
+
+### 本机 Python 启动
+
+Python 3.9+，仅标准库；数据库仍通过 Docker Compose 启动。
 
 ```sh
 python3 scanintent.py init-local
-docker compose up -d --wait
+docker compose up -d --wait clickhouse
 python3 scanintent.py init-db
 python3 scanintent.py doctor-source
 ```

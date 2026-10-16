@@ -58,6 +58,7 @@ def main():
     serve = commands.add_parser("serve", help="Read stored conversations; never starts collection")
     serve.add_argument("--project-id", required=True)
     serve.add_argument("--port", type=int, default=8765)
+    serve.add_argument("--host", default="127.0.0.1", help="Listen address; use 0.0.0.0 inside Docker")
     args = parser.parse_args()
     try:
         if args.command == "init-local":
@@ -70,7 +71,7 @@ def main():
             store = Store(Client.target())
             if args.command == "serve":
                 from web import serve
-                serve(store, args.project_id, args.port)
+                serve(store, args.project_id, args.port, host=args.host)
                 return
             with (ROOT / ".collection.lock").open("w") as lock:
                 try:
